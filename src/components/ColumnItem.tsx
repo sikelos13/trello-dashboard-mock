@@ -5,7 +5,7 @@ import { Box } from '../styles/Box';
 import { generateId } from '../utils/GeneratedID';
 import TaskItem from './TaskItem';
 import { PrimaryButton, SecondaryButton } from '../styles/Button/Button.base';
-
+import { getSortedTaskList } from '../utils/getSortedMoviesList';
 interface ColumnItemProps {
     column: Column;
     handleRemoveColumn: (event: any) => void;
@@ -14,9 +14,8 @@ interface ColumnItemProps {
 const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn }: ColumnItemProps) => {
     const [columnTitle, setTitle] = useState(column.title);
     const [tasksList, setNewTaskList] = useState<Task[]>(column.taskList);
-    const [selectedMovieTrailer, setSelectedMovieTrailer] = useState("");
-    const [selectedMovieReviews, setSelectedMovieReviews] = useState<any>([]);
-    const [selectedMovieSimilar, setSelectedMovieSimilar] = useState("No similar movies");
+    const [initialList, setInitialList] = useState<Task[]>(column.taskList);
+    const [sortByPriority, setSortPriority] = useState("");
 
     const handleEditTitle = () => {
 
@@ -33,6 +32,21 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
         const updatedList = [...tasksList, newTask];
 
         setNewTaskList(updatedList);
+        setInitialList(updatedList);
+    }
+
+    const handleSortChange = (event: any) => {
+        const { value } = event.target;
+        setSortPriority(value);
+        let sortedMoviesList = [] as Task[];
+
+        if(value === "") {
+            setNewTaskList(initialList)
+            return;
+        }
+
+        sortedMoviesList = getSortedTaskList(tasksList, value);
+        setNewTaskList(sortedMoviesList);
     }
 
     return (
@@ -44,12 +58,25 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
             minWidth="320px" 
             display="flex" 
             direction="column"
+            overflowY="auto"
             mr={15}
         >
             <Box display="flex" direction="column" align="center">
                 <Box>
                     <PrimaryButton onClick={handleAddTask}>Add task</PrimaryButton>
                     <CustomSecondaryButton value={column.id} onClick={handleRemoveColumn}>Remove column</CustomSecondaryButton>
+                    {tasksList.length > 0 &&
+                        <Box mt={10}>
+                            <select
+                                value={sortByPriority}
+                                onChange={handleSortChange}
+                            >
+                                <option value="">Default</option>
+                                <option value="highest_priority">Highest priority</option>
+                                <option value="lowest_priority">Lowest priority</option>
+                            </select>
+                        </Box>
+                    }
                 </Box>
                 <ColumnInputTitle type="text" name="name" value={columnTitle} onChange={handleEditTitle} />
                

@@ -89,6 +89,7 @@ const TaskPriority = styled.input`
 const TaskDescription = styled.textarea`
     width: 280px;
     margin: 5px;
+    height: 120px;
     outline: 0;
     resize: none;
     border-width: 0;
