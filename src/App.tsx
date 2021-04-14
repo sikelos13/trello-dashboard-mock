@@ -1,15 +1,11 @@
 import './App.scss';
-import MoviesView from './containers/MoviesView';
-import { Container } from '@material-ui/core';
+import TasksView from './containers/TasksView';
+import { Container } from './styles/task_view';
 
 function App() {
   return (
     <Container>
-      <Toaster 
-        position="top-center"
-        reverseOrder={false}
-      />
-      <MoviesView />
+      <TasksView />
     </Container>
   );
 }
