@@ -1,15 +1,15 @@
 
 import React, { Component } from "react";
-import MoviesList from "../components/ColumnItem";
-// import SkeletonLoader from "../components/SkeletonLoader";
 import Header from "../components/Header";
-// import { getSortedMoviesList } from '../utils/getSortedMoviesList';
-import { Container } from '../styles/task_view';
-import { Column } from '../types';
+import { Column, Task } from '../types';
 import { generateId } from '../utils/GeneratedID';
-import { Box } from '../styles/Box';
+import Box from "@material-ui/core/Box";
 import ColumnItem from '../components/ColumnItem';
-import { getUpdatedColumnList } from "../utils/getUpdatedColumnList";
+import { getUpdatedList } from "../utils/getUpdatedList";
+import { Container } from '@material-ui/core';
+import { DragDropContext } from 'react-beautiful-dnd';
+import { getUpdatedDraggedItems } from "../utils/getUpdatedDraggedItems";
+import { getUpdatedColumnTaskList } from "../utils/getUpdatedColumnTaskList";
 
 export interface TaskManagementViewState {
     columnList: Column[];
@@ -19,8 +19,8 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
     constructor(props: any) {
         super(props);
 
-        this.state = {
-            columnList: [] 
+        this.state = { 
+            columnList: []
         };
     }
 
@@ -28,16 +28,12 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
         this.setColumns();
     }
 
-    componentDidUpdate() {
-        // this.scrollbarIsVisible();
-    }
-
     setColumns = () => {
         const { columnList } = this.state;
 
         const initColumn = {
             id: generateId(),
-            title: `Test Column ${columnList.length +1}`,
+            title: `Test Column ${columnList.length + 1}`,
             canBeDeleted: false,
             sortTaskBy: '',
             taskList: [],
@@ -52,7 +48,7 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
 
         const newColumn = {
             id: generateId(),
-            title: `Test Column ${columnList.length +1}`,
+            title: `Test Column ${columnList.length + 1}`,
             canBeDeleted: false,
             sortTaskBy: '',
             taskList: [],
@@ -64,51 +60,64 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
         this.setState({ columnList: updatedList })
     }
 
-    handleRemoveColumn = (event: any) => {
-        const { value } = event.target;
+    handleRemoveColumn = (id: number) => {
         const { columnList } = this.state;
 
-        const updatedColumnList = getUpdatedColumnList(columnList, value);
+        const updatedColumnList = getUpdatedList(columnList, id);
 
-        this.setState({
-            columnList: updatedColumnList
-        });
+        this.setState({ columnList: updatedColumnList });
+    }
+
+    handleClearBoard = () => {
+        localStorage.clear();
+        this.setState({ columnList: [] })
+    }
+
+    onDragEnd = (event: any) => {
+        const { columnList } = this.state;
+        const { draggableId, source, destination } = event;
+        const destinationId = destination ? destination.droppableId : null;
+        const sourceId = source.droppableId;
+
+        if(!destinationId || !draggableId) {
+            return;
+        }
+
+        const updatedColumnList = getUpdatedDraggedItems(columnList, sourceId, destinationId, draggableId);
+        this.setState({ columnList: updatedColumnList });
+    }
+
+    setUpdatedColumn = (id: number, taskList: Task[]) => {
+        const { columnList } = this.state;
+        const updatedColumnList = getUpdatedColumnTaskList(columnList, id, taskList);
+        this.setState({ columnList: updatedColumnList });
     }
 
     render() {
         const { columnList } = this.state;
 
         return (
-            <Box overflowX="auto">
-                <Header handledAddColumn={this.handledAddColumn} />
-                <Box display="flex" direction="row" mt={20} p="10px">
-                    {columnList && columnList.length > 0 
-                        ? columnList.map((column: Column) => {
-                            return (
-                                <ColumnItem 
-                                    key={column.id} 
-                                    column={column} 
-                                    handleRemoveColumn={this.handleRemoveColumn}
-                                />
-                            )
-                        })
-                        : null
-                    }
-                    {/* //     mt={2}
-                    //     pb={2}
-                    //     display="flex"
-                    //     flexDirection="row"
-                    //     flexWrap="wrap"
-                    //     justifyContent="space-evenly"
-                    //     style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 310px)' }}
-                    //     id="listScroll"
-                    //     onScroll={this.handleScroll} */}
-                        {/* {loading === "initial_load"
-                            ? <SkeletonLoader />
-                            : <MoviesList moviesList={moviesList} />
-                        } */}
-
-                </Box>
+            <Box style={{ overflowX: 'auto' }}>
+                <Header handledAddColumn={this.handledAddColumn} handleClearBoard={this.handleClearBoard} />
+                <DragDropContext onDragEnd={this.onDragEnd}>
+                    <Container style={{ maxWidth: "1500px"}}>
+                        <Box display="flex" flexDirection="row" mt={10} p="10px">
+                            {columnList && columnList.length > 0
+                                ? columnList.map((column: Column) => {
+                                    return (
+                                        <ColumnItem
+                                            key={column.id}
+                                            column={column}
+                                            setUpdatedColumn={this.setUpdatedColumn}
+                                            handleRemoveColumn={this.handleRemoveColumn}
+                                        />
+                                    )
+                                })
+                                : null
+                            }
+                        </Box>
+                    </Container>
+                </DragDropContext>
             </Box>
         );
     }

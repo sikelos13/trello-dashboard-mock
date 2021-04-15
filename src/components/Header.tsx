@@ -1,23 +1,33 @@
 import React from 'react';
-import { Box } from '../styles/Box';
-import { H2 } from '../styles/Box/Typography/Typography';
-import { PrimaryButton } from '../styles/Button/Button.base';
-import styled from 'styled-components'
+import { Box, Button } from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
 
 interface ViewHeaderProps {
   handledAddColumn: () => void;
+  handleClearBoard: () => void;
 }
 
-const Header: React.FC<ViewHeaderProps> = (({ handledAddColumn }: ViewHeaderProps) => (
-  <Box display="flex" direction="row" justify="space-between" p="10px">
-    <H2 textAlign="center">Ticket management</H2>
-    <ColumnAddButton onClick={handledAddColumn}>Add column</ColumnAddButton>
+const Header: React.FC<ViewHeaderProps> = (({ handledAddColumn, handleClearBoard }: ViewHeaderProps) => (
+  <AppBar position="static" style={{ backgroundColor: '#f7f8fb' }}>
+    <Box display="flex" flexDirection="row" justifyContent="space-between" p="5px 15px" alignItems="center">
+    <Box component={'h2'} textAlign="center" color="#6775c3">Ticket management</Box>
+    <Box>
+      <Button
+          size="small"
+          color="primary"
+          onClick={handledAddColumn}>
+          Add column
+      </Button>
+      <Button
+          size="small"
+          color="secondary"
+          onClick={handleClearBoard}>
+          Clear board
+      </Button>
+    </Box>
   </Box>
+</AppBar>
+
 ));
-
-const ColumnAddButton = styled(PrimaryButton)`
-  background-color: #ededed;
-
-`
 
 export default Header;

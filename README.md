@@ -1,19 +1,18 @@
 ## Tomorrow assignment
 
-Movies assignment using CRA and Styled components.
+Tomorrow assignment using CRA and Materia UI.
 ## Build With
 
 * [React](https://reactjs.org/)
 * [Create-react-app with Typescript template](https://create-react-app.dev/docs/adding-typescript/)
-* [React hot toast](https://github.com/timolins/react-hot-toast)
-* [Typescript](https://www.typescriptlang.org/docs/handbook/react.html)
-* [Axios](https://github.com/axios/axios)
+* [Typescript](https://www.typescriptlang.org/docs/handbook/react.html) 
+* [Material-UI](https://material-ui.com/)
 
-### How to run 
+### How to run with NPM in development
 
 ```
-git clone movies-assignment
-cd movies-assignment
+git clone tomorrow-assignment
+cd tomorrow-assignment
 ```
 
 ```
@@ -21,23 +20,43 @@ npm install
 npm run start
 ```
 
+### How to run with Docker in production
+
+#### Prerequisites 
+
+Docker must be installed in order to run the below instructions. 
+Learn more [Docker documentation](https://docs.docker.com/)
+
+I have used multi-stage build in Docker, in order to optimize the size of the built image. 
+As you will see in the Dockerfile, an initial node-based phase is utilized only for building the static assets, which are then copied over and served from a stripped-down nginx image. 
+In order to run the project please run:
+
+```
+cd tomorrow-assignment
+
+docker-compose up production
+```
+
+*Production listening at:*  **localhost:8080**.
+
+
 ### Features implemented
-* Search field with on change search action (Debounce used here)
-* Show details of movie by click the card
-* Infinity scrolling for pagination
-* Movie trailer from embeded youtube video.
-* Sort by "Highest score average" or "Lowest score average"
+* Add or remove new columns in board.
+* Add or remove tasks withing the columns.
+* Add estimation time in each task.
+* Drag and drop any task from one column to another.
+* Sort by "Highest priority task" or "Lowest priority task".
 
 ### Testing build with
 
 * [Jest for React](https://jestjs.io/)
 * [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-* [Axios mock adapter](https://github.com/ctimmerm/axios-mock-adapter#readme)
 
 ### Testing
 To run the test type:
 
 ```
+npm install
 npm test
 ```
 

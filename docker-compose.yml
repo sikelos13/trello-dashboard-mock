@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+
+  production:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: tomorrow-production
+    ports:
+      - 8080:80
