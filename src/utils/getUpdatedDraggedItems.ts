@@ -1,29 +1,34 @@
-import { Column, Task } from "../types";
-import { getUpdatedList } from "./getUpdatedList";
+import { Column } from "../types";
 
-export const getUpdatedDraggedItems = (list: Column[], sourceId: string, destinationId: string, draggableId: string) => {
-    const sourceColumnList = list.find((column: Column) => String(column.id) === sourceId);
-    const draggableItem = sourceColumnList && sourceColumnList.taskList.find((task: Task) => String(task.id) === draggableId);
+export const getUpdatedDraggedItems = (list: Column[], source: any, destination: any, draggableId: string) => {
+    const sourceColumn = list.find((column: Column) => String(column.id) === source.droppableId);
+    const destinationColumn= list.find((column: Column) => String(column.id) === destination.droppableId);
+
+    if (!sourceColumn || !destinationColumn) {
+        return list;
+    }
+
+    const [removedItem] = sourceColumn.taskList.splice(source.index, 1);
+    destinationColumn.taskList.splice(destination.index, 0, removedItem);
 
     const updatedColumnList = list.map((column: Column) => {
-        if (column.id === Number(sourceId)) {
+        if (column.id === Number(source.droppableId)) {
             const updatedColumn = {
                 ...column,
-                taskList: getUpdatedList(column.taskList, Number(draggableId))
+                taskList:  sourceColumn.taskList
             } as Column
 
             return updatedColumn;
         }
 
-        if (column.id === Number(destinationId)) {
+        if (column.id === Number(destination.droppableId)) {
             const updatedColumn = {
                 ...column,
-                taskList: [...column.taskList, draggableItem]
+                taskList: destinationColumn.taskList
             } as Column
 
             return updatedColumn;
         }
-
         return column;
     })
 

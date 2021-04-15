@@ -9,6 +9,7 @@ import Card from '@material-ui/core/Card';
 import { Input } from '@material-ui/core';
 import { getUpdatedList } from '../utils/getUpdatedList';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
+import { updateLocalStorage } from '../utils/updateLocalStorage';
 
 interface ColumnItemProps {
     column: Column;
@@ -38,10 +39,16 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
         }
         const updatedList = [...tasksList, newTask];
 
+        const updatedColumn = {
+            ...column,
+            taskList: updatedList
+        } as Column
+
         setNewTaskList(updatedList);
         setInitialList(updatedList);
         setUpdatedColumn(column.id, updatedList);
-        setTaskLength(updatedList.length)
+        setTaskLength(updatedList.length);
+        updateLocalStorage(column.id, updatedColumn);
     }
 
     const handleSortChange = (event: any) => {
@@ -64,6 +71,15 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
         setNewTaskList(updatedTaskList);
     }
 
+    const handleOnBlur = () => {
+        const updatedColumn = {
+            ...column,
+            title: columnTitle
+        } as Column
+
+        updateLocalStorage(column.id, updatedColumn);
+    }
+
     return (
         <Droppable droppableId={String(column.id)}>
             {(provided) => (
@@ -71,7 +87,7 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
                     <Box
                         component={Card}
                         maxHeight="900px"
-                        minHeight="800px"
+                        height="900px"
                         width="320px"
                         minWidth="320px"
                         display="flex"
@@ -101,6 +117,7 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
                                     <Input
                                         placeholder="Insert column title"
                                         value={columnTitle}
+                                        onBlur={handleOnBlur}
                                         onChange={handleEditTitle}
                                         style={{ width: "60%" }}
                                     />
@@ -140,7 +157,6 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
                             })
                             : null
                         }
-
                     </Box>
                     {provided.placeholder}
                 </div>
