@@ -7,17 +7,16 @@ import { getSortedTaskList } from '../utils/getSortedTaskList';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Card from '@material-ui/core/Card';
 import { Input } from '@material-ui/core';
-import { getListAfterRemove } from '../utils/getListAfterRemove';
+import { getListAfterRemove } from '../utils/getItemsAfterRemove';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { updateLocalStorageColumn } from '../utils/updateLocalStorageColumn';
 
 interface ColumnItemProps {
     column: Column;
     handleRemoveColumn: (id: number) => void;
-    setUpdatedColumn: (id: number, taskList: Task[]) => void;
 }
 
-const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn, setUpdatedColumn }: ColumnItemProps) => {
+const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn }: ColumnItemProps) => {
     const [columnTitle, setTitle] = useState(column.title);
     const [tasksList, setNewTaskList] = useState<Task[]>([]);
     const [initialList, setInitialList] = useState<Task[]>(column.taskList);
@@ -26,6 +25,7 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
 
     useEffect(() => {
         setNewTaskList(column.taskList);
+        setInitialList(column.taskList);
         setTaskLength(column.taskList.length);
     }, [column.taskList]);
 
@@ -53,15 +53,15 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
 
         setNewTaskList(updatedList);
         setInitialList(updatedList);
-        setUpdatedColumn(column.id, updatedList);
         setTaskLength(updatedList.length);
         updateLocalStorageColumn(column.id, updatedColumn);
     }
 
     const handleSortChange = (event: any) => {
         const { value } = event.target;
-        setSortPriority(value);
         let sortedMoviesList = [] as Task[];
+
+        setSortPriority(value);
 
         if (value === "") {
             setNewTaskList(initialList);

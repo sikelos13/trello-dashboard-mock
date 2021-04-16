@@ -46,7 +46,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
             timeEstimation: taskEstimation
         } as Task
 
-        updateLocalStorageTask(task.id, columnId, updatedTask);
+        updateLocalStorageTask(columnId, updatedTask);
     }
 
     return (

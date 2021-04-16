@@ -2,7 +2,6 @@ export interface Column {
     id: number;
     title: string;
     canBeDeleted: boolean;
-    sortTaskBy: SortType;
     taskList: Task[];
 }
 

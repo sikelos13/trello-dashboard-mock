@@ -1,6 +1,6 @@
 import { Task } from "../types";
 
-export const updateLocalStorageTask = (id: number, columnId: number , updatedTask: Task) => {
+export const updateLocalStorageTask = (columnId: number , updatedTask: Task) => {
     const columnEntities = JSON.parse(localStorage.getItem('columnEntities') || '{}');
     const selectedColumn = columnEntities[columnId]
 
