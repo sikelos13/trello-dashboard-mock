@@ -1,13 +1,10 @@
 import { Column, Task } from "../types";
 
-export const getUpdatedColumnTaskList = (list: any, id: number, newTaskList: Task[]) => {
-    return list.map((item: Column) => {
-        if(item.id === Number(id)) {
-            return {
-                ...item,
-                taskList: newTaskList
-            } as Column
-        }
-        return item;
-    });
+export const getUpdatedColumnTaskList = (entities: Record<number, Column>, id: number, newTaskList: Task[]) => {
+    entities[id] = {
+        ...entities[id],
+        taskList: newTaskList
+    }
+
+    return entities;
 }

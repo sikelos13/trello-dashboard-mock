@@ -7,6 +7,7 @@ Tomorrow assignment using CRA and Materia UI.
 * [Create-react-app with Typescript template](https://create-react-app.dev/docs/adding-typescript/)
 * [Typescript](https://www.typescriptlang.org/docs/handbook/react.html) 
 * [Material-UI](https://material-ui.com/)
+* [React-beautiful-dnd](https://github.com/atlassian/react-beautiful-dnd) 
 
 ### How to run with NPM in development
 

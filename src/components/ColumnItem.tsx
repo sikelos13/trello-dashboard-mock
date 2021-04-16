@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Column, Task } from '../types';
 import { generateId } from '../utils/GeneratedID';
 import TaskItem from './TaskItem';
@@ -7,9 +7,9 @@ import { getSortedTaskList } from '../utils/getSortedTaskList';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Card from '@material-ui/core/Card';
 import { Input } from '@material-ui/core';
-import { getUpdatedList } from '../utils/getUpdatedList';
+import { getListAfterRemove } from '../utils/getListAfterRemove';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
-import { updateLocalStorage } from '../utils/updateLocalStorage';
+import { updateLocalStorageColumn } from '../utils/updateLocalStorageColumn';
 
 interface ColumnItemProps {
     column: Column;
@@ -19,10 +19,15 @@ interface ColumnItemProps {
 
 const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn, setUpdatedColumn }: ColumnItemProps) => {
     const [columnTitle, setTitle] = useState(column.title);
-    const [tasksList, setNewTaskList] = useState<Task[]>(column.taskList);
+    const [tasksList, setNewTaskList] = useState<Task[]>([]);
     const [initialList, setInitialList] = useState<Task[]>(column.taskList);
     const [sortByPriority, setSortPriority] = useState("");
     const [tasksLength, setTaskLength] = useState(0);
+
+    useEffect(() => {
+        setNewTaskList(column.taskList);
+        setTaskLength(column.taskList.length);
+    }, [column.taskList]);
 
     const handleEditTitle = (event: any) => {
         const { value } = event.target;
@@ -34,13 +39,15 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
             id: generateId(),
             title: 'new task title',
             description: '',
-            timeEstimation: null,
+            timeEstimation: "07:30",
             priority: tasksList.length
         }
+
         const updatedList = [...tasksList, newTask];
 
         const updatedColumn = {
             ...column,
+            title: columnTitle,
             taskList: updatedList
         } as Column
 
@@ -48,7 +55,7 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
         setInitialList(updatedList);
         setUpdatedColumn(column.id, updatedList);
         setTaskLength(updatedList.length);
-        updateLocalStorage(column.id, updatedColumn);
+        updateLocalStorageColumn(column.id, updatedColumn);
     }
 
     const handleSortChange = (event: any) => {
@@ -66,9 +73,16 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
     }
 
     const handleRemoveTask = (id: number) => {
-        const updatedTaskList = getUpdatedList(tasksList, id);
+        const updatedTaskList = getListAfterRemove(tasksList, id);
         setTaskLength(updatedTaskList.length);
+
+        const updatedColumn = {
+            ...column,
+            taskList: updatedTaskList
+        } as Column
+
         setNewTaskList(updatedTaskList);
+        updateLocalStorageColumn(column.id, updatedColumn);
     }
 
     const handleOnBlur = () => {
@@ -77,7 +91,7 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
             title: columnTitle
         } as Column
 
-        updateLocalStorage(column.id, updatedColumn);
+        updateLocalStorageColumn(column.id, updatedColumn);
     }
 
     return (
@@ -102,14 +116,14 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
                                     color="primary"
                                     onClick={handleAddTask}>
                                     Add task
-                        </Button>
+                                </Button>
                                 <Button
                                     size="small"
                                     color="secondary"
-                                    disabled={tasksLength > 0}
+                                    disabled={column.canBeDeleted || tasksList.length > 0}
                                     onClick={() => handleRemoveColumn(column.id)}>
                                     Remove column
-                    </Button>
+                                </Button>
                             </Box>
                             <Box>
                                 <Box mt="5px" display="flex" alignItems="baseline" justifyContent="space-between">
@@ -150,7 +164,7 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
                                 return (
                                     <Draggable draggableId={String(task.id)} index={index} key={String(task.id)}>
                                         {(provided) => (
-                                            <TaskItem task={task} handleRemoveTask={handleRemoveTask} provided={provided} />
+                                            <TaskItem task={task} columnId={column.id} handleRemoveTask={handleRemoveTask} provided={provided} />
                                         )}
                                     </Draggable>
                                 )

@@ -5,73 +5,83 @@ import { Column, Task } from '../types';
 import { generateId } from '../utils/GeneratedID';
 import Box from "@material-ui/core/Box";
 import ColumnItem from '../components/ColumnItem';
-import { getUpdatedList } from "../utils/getUpdatedList";
+import { getEntitiesAfterRemove } from "../utils/getListAfterRemove";
 import { Container } from '@material-ui/core';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { getUpdatedDraggedItems } from "../utils/getUpdatedDraggedItems";
 import { getUpdatedColumnTaskList } from "../utils/getUpdatedColumnTaskList";
+import { isObjectEmpty } from "../utils/isObjectEmpty";
 
 export interface TaskManagementViewState {
-    columnList: Column[];
+    columnEntities: Record<number, Column>;
 }
 
 class TaskManagementView extends Component<{}, TaskManagementViewState> {
     constructor(props: any) {
         super(props);
 
-        this.state = {
-            columnList: []
-        };
+        this.state = { columnEntities: {} };
     }
 
     componentDidMount() {
-        this.setColumns();
+        this.getColumns();
     }
 
-    setColumns = () => {
-        const { columnList } = this.state;
+    getColumns = () => {
+        const { columnEntities } = this.state;
+        const localStorageColumnList = JSON.parse(localStorage.getItem('columnEntities') || '{}');
 
-        const initColumn = {
-            id: generateId(),
-            title: `Test Column ${columnList.length + 1}`,
-            canBeDeleted: false,
-            sortTaskBy: '',
-            taskList: [],
-            averageTime: null
-        } as Column
-
-        this.setState({ columnList: [initColumn] });
-        localStorage.setItem('columnsList', JSON.stringify([initColumn]));
+        if(localStorageColumnList && !isObjectEmpty(localStorageColumnList)) {
+            this.setState({ columnEntities: localStorageColumnList });
+        } else {
+            const initColumn = {
+                id: generateId(),
+                title: `Test Column ${ Object.keys(columnEntities).length + 1}`,
+                canBeDeleted: false,
+                sortTaskBy: '',
+                taskList: [],
+                averageTime: null
+            } as Column
+    
+            this.setState({ columnEntities: { [initColumn.id]: initColumn } });
+            localStorage.setItem('columnEntities', JSON.stringify({ [initColumn.id]: initColumn }));
+        }
     }
 
     handledAddColumn = () => {
-        const { columnList } = this.state;
+        const { columnEntities } = this.state;
+        const localStorageColumnList = isObjectEmpty(JSON.parse(localStorage.getItem('columnEntities') || '{}')) 
+            ? columnEntities 
+            : JSON.parse(localStorage.getItem('columnEntities')  || '{}');
 
         const newColumn = {
             id: generateId(),
-            title: `Test Column ${columnList.length + 1}`,
+            title: `Test Column ${Object.keys(columnEntities).length + 1}`,
             canBeDeleted: false,
             sortTaskBy: '',
             taskList: [],
             averageTime: null
         } as Column
 
-        const updatedList = [...columnList, newColumn];
+        localStorageColumnList[newColumn.id] = newColumn;
+        const updatedEntities = localStorageColumnList;
 
-        this.setState({ columnList: updatedList });
-        localStorage.setItem('columnsList', JSON.stringify(updatedList));
+        this.setState({ columnEntities: updatedEntities });
+        localStorage.setItem('columnEntities', JSON.stringify(updatedEntities));
     }
 
     handleRemoveColumn = (id: number) => {
-        const { columnList } = this.state;
-        const updatedColumnList = getUpdatedList(columnList, id);
+        const { columnEntities } = this.state;
+        const updatedEntities = getEntitiesAfterRemove(columnEntities, id);
 
-        this.setState({ columnList: updatedColumnList });
+        this.setState({ columnEntities: updatedEntities }, () => {
+            localStorage.setItem('columnEntities', JSON.stringify(updatedEntities));
+        });
     }
 
     handleClearBoard = () => {
         localStorage.clear();
-        this.setState({ columnList: [] })
+        this.setState({ columnEntities: {} })
     }
 
     reorder = (list: Column, startIndex: any, endIndex: any) => {
@@ -84,38 +94,43 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
 
 
     onDragEnd = (event: any) => {
-        const { columnList } = this.state;
-        const { draggableId, source, destination } = event;
+        const { columnEntities } = this.state;
+        const { source, destination } = event;
+        const localStorageEntities = isObjectEmpty(JSON.parse(localStorage.getItem('columnEntities') || '{}')) 
+            ? columnEntities 
+            : JSON.parse(localStorage.getItem('columnEntities')  || '{}');
 
-        if (!destination || !draggableId) {
+        if (!destination) {
             return;
         }
 
-        if (source.droppableId === destination.droppableId) {
-            const { columnList } = this.state;
-            const sourceColumn = columnList.find((column: Column) => String(column.id) === source.droppableId);
+        if (source.droppableId === destination.droppableId) {//reorder if same source and destination
+            const sourceColumn = localStorageEntities[source.droppableId];
             
             if(sourceColumn) {
                 const taskList = this.reorder(sourceColumn, source.index, destination.index);
-                const updatedColumnList = getUpdatedColumnTaskList(columnList, Number(source.droppableId), taskList);
+                const updatedReorderEntities = getUpdatedColumnTaskList(localStorageEntities, Number(source.droppableId), taskList);
     
-                this.setState({ columnList: updatedColumnList });
+                this.setState({ columnEntities: updatedReorderEntities }, () => {
+                    localStorage.setItem('columnEntities', JSON.stringify(updatedReorderEntities));
+                });
             }
-            return;
+        } else {
+            const updatedEntities = getUpdatedDraggedItems(localStorageEntities, source, destination);
+            this.setState({ columnEntities: updatedEntities }, () => {
+                localStorage.setItem('columnEntities', JSON.stringify(updatedEntities));
+            });
         }
-
-        const updatedColumnList = getUpdatedDraggedItems(columnList, source, destination, draggableId);
-        this.setState({ columnList: updatedColumnList });
     }
 
     setUpdatedColumn = (id: number, taskList: Task[]) => {
-        const { columnList } = this.state;
-        const updatedColumnList = getUpdatedColumnTaskList(columnList, id, taskList);
-        this.setState({ columnList: updatedColumnList });
+        const { columnEntities } = this.state;
+        const updatedEntities = getUpdatedColumnTaskList(columnEntities, id, taskList);
+        this.setState({ columnEntities: updatedEntities });
     }
 
     render() {
-        const { columnList } = this.state;
+        const { columnEntities } = this.state;
 
         return (
             <Box style={{ overflowX: 'auto' }}>
@@ -123,8 +138,9 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <Container style={{ maxWidth: "1500px" }}>
                         <Box display="flex" flexDirection="row" mt={10} p="10px">
-                            {columnList && columnList.length > 0
-                                ? columnList.map((column: Column) => {
+                            {columnEntities && Object.keys(columnEntities).length > 0
+                                ? Object.keys(columnEntities).map((key: string) => {
+                                    const column = columnEntities[Number(key)];
                                     return (
                                         <ColumnItem
                                             key={column.id}

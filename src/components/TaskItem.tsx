@@ -5,23 +5,28 @@ import { Input } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import { DraggableProvided } from 'react-beautiful-dnd';
+import { updateLocalStorageTask } from '../utils/updateLocalStorageTask';
 
 interface TaskItemProps {
     task: Task;
     provided: DraggableProvided;
+    columnId: number;
     handleRemoveTask: (id: number) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provided }: TaskItemProps) => {
+const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provided, columnId }: TaskItemProps) => {
     const [taskTitle, setTitle] = useState(task.title);
     const [taskDescription, setDescription] = useState(task.description);
     const [taskPriority, setPriority] = useState(task.priority);
+    const [taskEstimation, setEstimation] = useState(task.timeEstimation);
     const providedProp: DraggableProvided = provided;
 
     const handleEdit = (event: any) => {
         const { value, name } = event.target;
         if (name === 'title') {
             setTitle(value);
+        } else if (name === 'estimation') {
+            setEstimation(value);
         } else {
             setDescription(value);
         }
@@ -32,8 +37,20 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
         setPriority(value);
     }
 
+    const handleTaskOnBlur = () => {
+        const updatedTask = {
+            ...task,
+            title: taskTitle,
+            description: taskDescription,
+            priority: taskPriority,
+            timeEstimation: taskEstimation
+        } as Task
+
+        updateLocalStorageTask(task.id, columnId, updatedTask);
+    }
+
     return (
-        <div 
+        <div
             ref={(ref) => { providedProp.innerRef(ref) }}
             {...providedProp.draggableProps}
             {...providedProp.dragHandleProps}
@@ -52,6 +69,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
                             name="title"
                             fullWidth
                             value={taskTitle}
+                            onBlur={handleTaskOnBlur}
                             onChange={handleEdit}
                         />
                         <Input
@@ -61,6 +79,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
                             name="priority"
                             style={{ marginTop: '5px' }}
                             value={taskPriority}
+                            onBlur={handleTaskOnBlur}
                             onChange={handlePriority}
                         />
                     </Box>
@@ -70,6 +89,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
                         multiline
                         fullWidth
                         rows={5}
+                        onBlur={handleTaskOnBlur}
                         placeholder="Insert your description here"
                         value={taskDescription}
                         onChange={handleEdit}
@@ -80,7 +100,10 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
                             id="time"
                             label="Estimation"
                             type="time"
-                            defaultValue="07:30"
+                            name="estimation"
+                            value={taskEstimation}
+                            onBlur={handleTaskOnBlur}
+                            onChange={handleEdit}
                             InputLabelProps={{ shrink: true }}
                             inputProps={{ step: 300 }}
                             style={{ marginTop: '10px' }}

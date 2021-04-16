@@ -4,14 +4,13 @@ export interface Column {
     canBeDeleted: boolean;
     sortTaskBy: SortType;
     taskList: Task[];
-    averageTime: Date | null;
 }
 
 export interface Task {
     id: number;
     title: string;
     description: string;
-    timeEstimation: Date | null;
+    timeEstimation: Date | string | null;
     priority: number;
 }
 
