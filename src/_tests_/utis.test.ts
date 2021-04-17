@@ -109,8 +109,6 @@ describe("Return the updated entities", () => {
     updateLocalStorageTask(132, task);
     const columnEntities = JSON.parse(localStorage.getItem('columnEntities') || '{}');
     expect(columnEntities).toEqual(outputEntities);
-
-
   });
 });
 
@@ -167,40 +165,6 @@ describe("Return new list after removal", () => {
     expect(getListAfterRemove(mockTaskList, 124)).toEqual(output);
 
   });
-
-  // test("it should return new column object after success remove of column", () => {
-  //   const output = {
-  //     132: {
-  //       id: 132,
-  //       title: 'First column',
-  //       canBeDeleted: false,
-  //       taskList:  [
-  //         {
-  //             id: 122,
-  //             title: 'Second task',
-  //             description: 'Test second description',
-  //             timeEstimation: '20:10',
-  //             priority: 1
-  //         },
-  //         {
-  //             id: 124,
-  //             title: 'Third task',
-  //             description: 'Test third description',
-  //             timeEstimation: '07:20',
-  //             priority: 2
-  //         }
-  //     ]
-  //     },
-  //     133: {
-  //       id: 133,
-  //       title: 'Third column',
-  //       canBeDeleted: false,
-  //       taskList: mockTaskListV2
-  //     }
-  //   };
-  //   expect(getEntitiesAfterRemove(mockColumnEntities, 131)).toEqual(output);
-
-  // });
 });
 
 describe("Return true or false if object is empty", () => {
