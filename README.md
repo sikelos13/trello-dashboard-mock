@@ -8,6 +8,7 @@ Tomorrow assignment using CRA and Materia UI.
 * [Typescript](https://www.typescriptlang.org/docs/handbook/react.html) 
 * [Material-UI](https://material-ui.com/)
 * [React-beautiful-dnd](https://github.com/atlassian/react-beautiful-dnd) 
+* [Docker](https://www.docker.com/)
 
 ### How to run with NPM in development
 
