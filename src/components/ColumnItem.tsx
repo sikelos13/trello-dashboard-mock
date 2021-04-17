@@ -68,7 +68,7 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
             return;
         }
 
-        sortedMoviesList = getSortedTaskList(tasksList, value);
+        sortedMoviesList = getSortedTaskList(column.id, value);
         setNewTaskList(sortedMoviesList);
     }
 

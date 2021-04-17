@@ -129,7 +129,7 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
                 <Header handledAddColumn={this.handledAddColumn} handleClearBoard={this.handleClearBoard} />
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <Container style={{ maxWidth: "1500px" }}>
-                        <Box display="flex" flexDirection="row" mt={10} p="10px">
+                        <Box display="flex" flexDirection="row" mt={10} p="10px" id="test-container">
                             {columnEntities && Object.keys(columnEntities).length > 0
                                 ? Object.keys(columnEntities).map((key: string) => {
                                     const column = columnEntities[Number(key)];

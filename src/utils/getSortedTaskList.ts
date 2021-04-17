@@ -1,6 +1,9 @@
 import { Task, SortType } from "../types";
 
-export const getSortedTaskList = (taskList: Task[], sortBy: SortType) => {
+export const getSortedTaskList = (columnId: number, sortBy: SortType) => {
+    const columnEntities = JSON.parse(localStorage.getItem('columnEntities') || '{}');
+    const selectedColumn = columnEntities[columnId];
+    const taskList = selectedColumn.taskList
     let sortedTaskList = [] as Task[];
 
     if(sortBy === "highest_priority") {

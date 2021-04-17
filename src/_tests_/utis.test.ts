@@ -1,26 +1,36 @@
 
-import { getSortedTaskList } from '../utils/getSortedTaskList';
-import { mockTaskList } from './mocks/mockTaskList';
-import { mockSortedTaskListLowest, mockSortedTaskListHighest } from './mocks/sortedTaskList';
+import { mockTaskList, mockTaskListV2 } from './mocks/mockTaskList';
 import { generateId } from '../utils/GeneratedID';
 import { getListAfterRemove, getEntitiesAfterRemove } from '../utils/getItemsAfterRemove';
-import { mockColumnEntities } from './mocks/mockColumnEntities';
-import { getUpdatedColumnTaskList } from '../utils/getUpdatedColumnTaskList';
+import { mockColumnEntities, beforeDropEntities,afterDropEntities } from './mocks/mockColumnEntities';
 import { isObjectEmpty } from '../utils/isObjectEmpty';
+import { getUpdatedDraggedItems } from '../utils/getUpdatedDraggedItems'
 
-  describe("Return the list sorted", () => {
-    test("it should return list of tasks from highest to lowest priority", () => {
-      const output = mockSortedTaskListHighest;
-      expect(getSortedTaskList(mockTaskList,"highest_priority")).toEqual(output);
-  
-    });
+describe("Return drag and drop object", () => {
+  const source = {
+    index: 1,
+    droppableId: 132
+  }
 
-    test("it should return list of tasks from lowest to highest priority", () => {
-        const output = mockSortedTaskListLowest;
-        expect(getSortedTaskList(mockTaskList, "lowest_priority")).toEqual(output);
-    
-      });
+  const destination = {
+    index: 1,
+    droppableId: 133
+  }
+
+ const result =  getUpdatedDraggedItems(mockColumnEntities,source, destination);
+
+  test("it should return beforeDropEntities", () => {  
+    const output = beforeDropEntities;
+
+    expect(result.beforeDropEntities).toEqual(output);
   });
+
+  test("it should return afterDropEntities", () => {  
+    const output = afterDropEntities;
+
+    expect(result.afterDropEntities).toEqual(output);
+  });
+});
 
   describe("Return random generated id", () => {
     test("it should return an id", () => {  
@@ -37,13 +47,6 @@ import { isObjectEmpty } from '../utils/isObjectEmpty';
             description: 'Test second description',
             timeEstimation: '20:10',
             priority: 1
-        },
-        {
-            id: 123,
-            title: 'First task',
-            description: 'Test first description',
-            timeEstimation: '17:30',
-            priority: 0
         }
     ];
       expect(getListAfterRemove(mockTaskList,124)).toEqual(output);
@@ -53,44 +56,21 @@ import { isObjectEmpty } from '../utils/isObjectEmpty';
     test("it should return new column object after success remove of column", () => {
         const output = {
           132: {
-              id: 123,
+              id: 132,
               title: 'First column',
               canBeDeleted: false,
               taskList: mockTaskList
           },
           133: {
-              id: 124,
+              id: 133,
               title: 'Third column',
               canBeDeleted: false,
-              taskList: mockTaskList
+              taskList: mockTaskListV2
           }
       };
         expect(getEntitiesAfterRemove(mockColumnEntities, 131)).toEqual(output);
     
       });
-  });
-
-  describe("Return updated column", () => {
-    test("it should return new task list after removing task", () => {
-      const output = [
-        {
-          id: 123,
-          title: 'First task',
-          description: 'Test first description',
-          timeEstimation: '17:30',
-          priority: 0
-      },
-      {
-          id: 124,
-          title: 'Third task',
-          description: 'Test third description',
-          timeEstimation: '07:20',
-          priority: 2
-      }
-      ]
-
-    expect(getListAfterRemove(mockTaskList,122)).toEqual(output);
-    });
   });
 
   describe("Return true or false if object is empty", () => {

@@ -46,6 +46,7 @@ docker-compose up production
 * Add or remove tasks withing the columns.
 * Add estimation time in each task.
 * Drag and drop any task from one column to another.
+* Reorder cards by using drag and drop
 * Sort by "Highest priority task" or "Lowest priority task".
 
 ### Testing build with

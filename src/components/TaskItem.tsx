@@ -42,7 +42,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
             ...task,
             title: taskTitle,
             description: taskDescription,
-            priority: taskPriority,
+            priority: Number(taskPriority),
             timeEstimation: taskEstimation
         } as Task
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
-
 interface ViewHeaderProps {
   handledAddColumn: () => void;
   handleClearBoard: () => void;
@@ -11,6 +10,7 @@ const Header: React.FC<ViewHeaderProps> = (({ handledAddColumn, handleClearBoard
   <AppBar position="static" style={{ backgroundColor: '#f7f8fb' }}>
     <Box display="flex" flexDirection="row" justifyContent="space-between" p="5px 15px" alignItems="center">
     <Box component={'h2'} textAlign="center" color="#6775c3">Ticket management</Box>
+    <Box component={'h5'} textAlign="center" color="#6775c3">Drag and drop cards to the column of your choice</Box>
     <Box>
       <Button
           size="small"
