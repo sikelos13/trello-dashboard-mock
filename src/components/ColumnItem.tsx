@@ -39,9 +39,12 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
             id: generateId(),
             title: 'new task title',
             description: '',
-            timeEstimation: "07:30",
+            timeEstimation: {
+                hours: 7,
+                minutes: 10
+            },
             priority: tasksList.length
-        }
+        } as Task;
 
         const updatedList = [...tasksList, newTask];
 
@@ -164,7 +167,12 @@ const ColumnItem: React.FC<ColumnItemProps> = memo(({ column, handleRemoveColumn
                                 return (
                                     <Draggable draggableId={String(task.id)} index={index} key={String(task.id)}>
                                         {(provided) => (
-                                            <TaskItem task={task} columnId={column.id} handleRemoveTask={handleRemoveTask} provided={provided} />
+                                            <TaskItem 
+                                                task={task} 
+                                                columnId={column.id} 
+                                                handleRemoveTask={handleRemoveTask} 
+                                                provided={provided} 
+                                            />
                                         )}
                                     </Draggable>
                                 )

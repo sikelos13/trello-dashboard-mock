@@ -1,11 +1,11 @@
 import React, { memo, useState } from 'react';
 import { Task } from '../types';
-import { Box, Button } from '@material-ui/core';
-import { Input } from '@material-ui/core';
+import { Box, Button, FormLabel } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import { DraggableProvided } from 'react-beautiful-dnd';
 import { updateLocalStorageTask } from '../utils/updateLocalStorageTask';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 interface TaskItemProps {
     task: Task;
@@ -25,8 +25,6 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
         const { value, name } = event.target;
         if (name === 'title') {
             setTitle(value);
-        } else if (name === 'estimation') {
-            setEstimation(value);
         } else {
             setDescription(value);
         }
@@ -49,6 +47,16 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
         updateLocalStorageTask(columnId, updatedTask);
     }
 
+    const handleSetTime = (event: any) => {
+        const { value, name } = event.target;
+
+        const updatedEstimation = {
+            ...taskEstimation,
+            [name]: value
+        }
+        setEstimation(updatedEstimation);
+    }
+
     return (
         <div
             ref={(ref) => { providedProp.innerRef(ref) }}
@@ -64,16 +72,18 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
             >
                 <Box component={Card} p={"10px"}>
                     <Box mb="15px">
-                        <Input
+                        <TextField
                             placeholder="Insert task title here"
+                            label="Title"
                             name="title"
                             fullWidth
                             value={taskTitle}
                             onBlur={handleTaskOnBlur}
                             onChange={handleEdit}
                         />
-                        <Input
+                        <TextField
                             type="number"
+                            label="Priority"
                             fullWidth
                             placeholder="Priority"
                             name="priority"
@@ -95,19 +105,39 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, handleRemoveTask, provid
                         onChange={handleEdit}
                     />
 
+                    <Box  mt="5px">
+                        <Box component={FormLabel}>Estimation time</Box>
+                    </Box>
+
                     <Box display="flex" alignItems="flex-end" justifyContent="space-between">
-                        <TextField
-                            id="time"
-                            label="Estimation"
-                            type="time"
-                            name="estimation"
-                            value={taskEstimation}
-                            onBlur={handleTaskOnBlur}
-                            onChange={handleEdit}
-                            InputLabelProps={{ shrink: true }}
-                            inputProps={{ step: 300 }}
-                            style={{ marginTop: '10px' }}
-                        />
+                        <Box display="flex" alignItems="center" width="125px" mt="5px">
+                            <input
+                                type="number"
+                                placeholder="HH"
+                                name="hours"
+                                min={1}
+                                max={99}
+                                style={{ marginRight: '5px' }}
+                                value={taskEstimation.hours}
+                                onBlur={handleTaskOnBlur}
+                                onChange={handleSetTime}
+                            />
+                                :
+                                <input
+                                type="number"
+                                placeholder="MM"
+                                min={1}
+                                max={99}
+                                name="minutes"
+                                style={{ marginLeft: '5px' }}
+                                value={taskEstimation.minutes}
+                                onBlur={handleTaskOnBlur}
+                                onChange={handleSetTime}
+                            />
+                            <Box alignSelf="flex-end" ml="5px">
+                                <AccessTimeIcon />
+                            </Box>
+                        </Box>
 
                         <Button
                             size="small"

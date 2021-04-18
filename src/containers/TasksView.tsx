@@ -37,8 +37,7 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
                 id: generateId(),
                 title: `Test Column ${Object.keys(columnEntities).length + 1}`,
                 canBeDeleted: false,
-                taskList: [],
-                averageTime: null
+                taskList: []
             } as Column
 
             this.setState({ columnEntities: { [initColumn.id]: initColumn } });
@@ -56,8 +55,7 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
             id: generateId(),
             title: `Test Column ${Object.keys(columnEntities).length + 1}`,
             canBeDeleted: false,
-            taskList: [],
-            averageTime: null
+            taskList: []
         } as Column
 
         localStorageColumnList[newColumn.id] = newColumn;
@@ -125,10 +123,10 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
         const { columnEntities } = this.state;
 
         return (
-            <Box style={{ overflowX: 'auto' }}>
+            <Box>
                 <Header handledAddColumn={this.handledAddColumn} handleClearBoard={this.handleClearBoard} />
                 <DragDropContext onDragEnd={this.onDragEnd}>
-                    <Container style={{ maxWidth: "1500px" }}>
+                    <Container style={{ maxWidth: "1500px" , overflowY: 'auto' }}>
                         <Box display="flex" flexDirection="row" mt={10} p="10px" id="test-container">
                             {columnEntities && Object.keys(columnEntities).length > 0
                                 ? Object.keys(columnEntities).map((key: string) => {

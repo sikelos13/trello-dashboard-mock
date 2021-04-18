@@ -1,7 +1,8 @@
 import ReactDOM from 'react-dom';
-import App from './App';
+import './index.scss';
+import TasksView from './containers/TasksView';
 
 ReactDOM.render(
-    <App />,
+    <TasksView />,
   document.getElementById('root')
 );
