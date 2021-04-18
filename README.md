@@ -39,7 +39,7 @@ cd tomorrow-assignment
 docker-compose up production
 ```
 
-*Disclaimer*  **When 'attaching to tomorrow-production' message shown in terminal then you can access the web app from**.
+*Disclaimer*  **When 'attaching to tomorrow-production' message shown in terminal then you can access the web app from http://localhost:8080**.
 
 
 ### Features implemented
