@@ -119,13 +119,19 @@ class TaskManagementView extends Component<{}, TaskManagementViewState> {
         }
     }
 
+    onBeforeCapture = () => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }
+
     render() {
         const { columnEntities } = this.state;
 
         return (
             <Box>
                 <Header handledAddColumn={this.handledAddColumn} handleClearBoard={this.handleClearBoard} />
-                <DragDropContext onDragEnd={this.onDragEnd}>
+                <DragDropContext onDragEnd={this.onDragEnd} onBeforeCapture={this.onBeforeCapture}>
                     <Container style={{ maxWidth: "1500px" , overflowY: 'auto' }}>
                         <Box display="flex" flexDirection="row" mt={10} p="10px" id="test-container">
                             {columnEntities && Object.keys(columnEntities).length > 0
