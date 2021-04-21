@@ -1,6 +1,6 @@
-## Tomorrow assignment
+## Trello mock
 
-Tomorrow assignment using CRA and Materia UI.
+Trello mock using CRA and Materia UI.
 ## Build With
 
 * [React](https://reactjs.org/)
@@ -13,8 +13,8 @@ Tomorrow assignment using CRA and Materia UI.
 ### How to run with NPM in development
 
 ```
-git clone tomorrow-assignment
-cd tomorrow-assignment
+git clone trello-dashboard-mock
+cd trello-dashboard-mock
 ```
 
 ```
@@ -34,7 +34,7 @@ As you will see in the Dockerfile, an initial node-based phase is utilized only 
 In order to run the project please run:
 
 ```
-cd tomorrow-assignment
+cd trello-dashboard-mock
 
 docker-compose up production
 ```
